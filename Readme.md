@@ -1,207 +1,165 @@
-Folder Structure
+# StreakUp Backend API
 
-backend/
-├─ src/
-│   ├─ index.ts
-│   ├─ app.ts
-│   ├─ config/
-│   │   └─ index.ts
-│   ├─ controllers/
-│   │   └─ exampleController.ts
-│   ├─ middlewares/
-│   │   └─ errorMiddleware.ts
-│   ├─ models/
-│   │   └─ exampleModel.ts
-│   ├─ routes/
-│   │   └─ index.ts
-│   ├─ services/
-│   │   └─ exampleService.ts
-│   ├─ utils/
-│   │   └─ helpers.ts
-│   └─ validators/
-│       └─ exampleValidator.ts   # e.g., Joi or express-validator schemas
-├─ tests/
-│   └─ example.test.ts
-├─ package.json
-└─ .env
+A Node.js/Express REST API built with TypeScript for the StreakUp fitness mobile application.
 
+## 🚀 Quick Start
 
-Drawbacks right now..
+### Prerequisites
+- Node.js v18+
+- MongoDB (local or Atlas)
 
-I'll analyze your backend codebase and provide a comprehensive critique. Let me start by examining the structure and key files to understand your backend architecture.
+### Installation
 
+```bash
+# Install dependencies
+npm install
 
-[4 tools called]
+# Create .env file
+cp .env.example .env
+# Edit .env with your configuration
 
-Now let me examine the core components - models, controllers, routes, and middleware:
-
-
-[4 tools called]
-
-Let me examine the remaining key files:
-
-
-[4 tools called]
-
-Now let me check the validators and types:
-
-
-[4 tools called]
-
-Let me also check the test file and any configuration files:
-
-
-[3 tools called]
-
-Let me check if there are any environment configuration files:
-
-
-[2 tools called]
-
-Now let me check for any services directory:
-
-
-[1 tool called]
-
-Based on my comprehensive analysis of your backend codebase, here's my detailed critique as a backend architecture reviewer:
-
-## **Backend Code Review: 72/100**
-
-### **Strengths (What's Working Well):**
-
-**1. Architecture & Structure (8/10)**
-- Clean separation of concerns with proper MVC pattern
-- Well-organized folder structure with logical separation
-- Good use of TypeScript for type safety
-- Proper middleware implementation
-
-**2. Security Implementation (7/10)**
-- JWT-based authentication with access/refresh token pattern
-- Password hashing with bcryptjs
-- Google OAuth integration
-- CORS configuration for mobile app
-- Input validation with Zod schemas
-
-**3. Code Quality (6/10)**
-- Consistent error handling patterns
-- Good use of TypeScript interfaces
-- Clean utility functions
-- Proper async/await usage
-
-### **Critical Issues (Major Deductions):**
-
-**1. Security Vulnerabilities (-15 points)**
-```typescript
-// In user.model.ts line 34
-userSchema.index({ username: "text" }); // Should be userName, not username
-```
-- **Inconsistent field naming** between schema and index
-- **Missing rate limiting** for authentication endpoints
-- **No input sanitization** beyond Zod validation
-- **Refresh token stored in plain text** in database
-- **Missing CSRF protection**
-- **No request size limits** configured
-
-**2. Error Handling Issues (-8 points)**
-```typescript
-// In auth.controller.ts
-catch (error: any) {
-    if (error.name === "ZodError") return error(res, error.errors, 400);
-    console.error(error);
-    return error(res, "Server Error", 500); // Too generic
-}
-```
-- **Generic error messages** expose no useful information
-- **No error logging system** (just console.error)
-- **Missing error monitoring** and alerting
-- **No graceful shutdown** handling
-
-**3. Database & Performance Issues (-10 points)**
-- **No database connection pooling** configuration
-- **Missing database indexes** for frequently queried fields
-- **No query optimization** or caching
-- **No database migration system**
-- **Missing connection retry logic**
-
-**4. Missing Production Features (-15 points)**
-- **No environment configuration** management
-- **No health check endpoints**
-- **No API documentation** (Swagger/OpenAPI)
-- **No request/response logging**
-- **No metrics collection**
-- **No backup strategy**
-
-### **Code Quality Issues:**
-
-**1. Inconsistent Naming (-3 points)**
-```typescript
-// In auth.controller.ts line 131
-export const Logout = async(req: Request, res: Response) => {
-    return success(res, "Logged out successfully");
-}
-// Should be: export const logout (camelCase)
+# Start development server
+npm run dev
 ```
 
-**2. Missing Validation (-5 points)**
-- No email format validation beyond Zod
-- No password strength requirements
-- No username format validation
-- Missing file upload validation (if needed)
+Server runs on `http://localhost:8000`
 
-**3. Incomplete Features (-7 points)**
-- **Logout function is incomplete** - doesn't invalidate tokens
-- **No password reset functionality**
-- **No email verification**
-- **No account deletion**
-- **No user profile management**
+## 📁 Project Structure
 
-### **Mobile App Specific Issues:**
+```
+src/
+├── controllers/     # Request handlers
+├── models/         # MongoDB schemas
+├── routes/v1/     # API routes
+├── services/       # Business logic
+├── middlewares/    # Auth, validation, error handling
+├── validators/     # Zod validation schemas
+├── utils/          # Helper functions
+└── types/          # TypeScript types
+```
 
-**1. Token Management (-5 points)**
-- No token rotation strategy
-- Missing token blacklisting
-- No device-specific token management
-- Inconsistent token handling between web/mobile
+## 🔑 Environment Variables
 
-**2. API Design (-3 points)**
-- Missing pagination for user lists
-- No API versioning
-- Inconsistent response formats
-- Missing proper HTTP status codes
+Create a `.env` file:
 
-### **Recommendations for Improvement:**
+```env
+# Required
+MONGODB_URI=mongodb://localhost:27017/streakup
+ACCESS_TOKEN_SECRET=your-secret-min-32-chars
+REFRESH_TOKEN_SECRET=your-refresh-secret-min-32-chars
+GOOGLE_CLIENT_ID=your-google-client-id
 
-**Immediate Fixes (Priority 1):**
-1. Fix the username/index mismatch in user model
-2. Implement proper logout with token invalidation
-3. Add rate limiting middleware
-4. Implement proper error logging
-5. Add environment configuration
+# Optional
+PORT=8000
+ACCESS_TOKEN_EXPIRY=15m
+REFRESH_TOKEN_EXPIRY=15d
+```
 
-**Short-term Improvements (Priority 2):**
-1. Add comprehensive test coverage
-2. Implement database connection pooling
-3. Add API documentation
-4. Implement proper logging system
-5. Add health check endpoints
+## 📚 API Endpoints
 
-**Long-term Enhancements (Priority 3):**
-1. Implement microservices architecture
-2. Add caching layer (Redis)
-3. Implement monitoring and alerting
-4. Add CI/CD pipeline
-5. Implement proper backup strategy
+Base URL: `http://localhost:8000/api/v1`
 
-### **Final Assessment:**
+### Authentication
+- `POST /auth/signup` - Create account
+- `POST /auth/login` - Login
+- `POST /auth/refresh` - Refresh token
+- `POST /auth/logout` - Logout (requires auth)
+- `POST /auth/google-login` - Google OAuth
 
-Your backend shows **solid fundamentals** with good TypeScript usage and clean architecture. However, it's **not production-ready** due to security vulnerabilities, incomplete features, and missing production concerns. For a mobile app backend, you need to address the authentication flow completeness and add proper error handling.
+### Plans
+- `POST /plan/generate` - Generate 12-week plan (requires auth)
+- `GET /plan/current` - Get current week (requires auth)
+- `GET /plan/week?weekNumber=1` - Get specific week (requires auth)
+- `GET /plan/all` - Get all weeks overview (requires auth)
 
-**Score Breakdown:**
-- Architecture: 8/10
-- Security: 5/10 (major issues)
-- Code Quality: 6/10
-- Production Readiness: 3/10
-- Mobile App Suitability: 6/10
-- Testing: 2/10 (minimal coverage)
+### Workouts
+- `GET /workout?weekNumber=1` - Get workouts for week (requires auth)
+- `GET /workout/:id` - Get workout details (requires auth)
+- `POST /workout/complete` - Complete workout (requires auth)
+- `GET /workout/history/all` - Get workout history (requires auth)
 
-**Overall: 72/100** - Good foundation, but needs significant work for production deployment.
+### Meals
+- `GET /meal?weekNumber=1` - Get meals for week (requires auth)
+- `POST /meal/log` - Log meal (requires auth)
+- `POST /meal/skip` - Skip meal (requires auth)
+- `GET /meal/history/all` - Get meal history (requires auth)
+
+### Progress
+- `GET /progress/dashboard` - Get dashboard stats (requires auth)
+- `GET /progress/stats` - Get detailed stats (requires auth)
+
+### Health
+- `GET /health` - Health check (public)
+
+## 🔐 Authentication
+
+Protected routes require a JWT token in the `Authorization` header:
+
+```
+Authorization: Bearer <accessToken>
+```
+
+Tokens are obtained from `/auth/login` or `/auth/signup`:
+- `accessToken` - Expires in 15 minutes
+- `refreshToken` - Expires in 15 days
+
+## 🛠 Scripts
+
+```bash
+npm run dev      # Start development server
+npm run build    # Build for production
+npm start        # Start production server
+npm test         # Run tests
+npm run lint     # Run ESLint
+npm run format   # Format code with Prettier
+```
+
+## 🗄 Database Models
+
+- **User** - User accounts and authentication
+- **Onboarding** - Questionnaire answers
+- **UserPlan** - 12-week plans (one per week)
+- **Workout** - Workout templates
+- **Meal** - Meal templates
+- **WorkoutLog** - Completed workouts
+- **MealLog** - Logged meals
+- **Progress** - User progress statistics
+- **Achievement** - Unlocked badges
+
+## 🏗 Architecture
+
+```
+Request → Route → Middleware → Controller → Service → Model → Database
+```
+
+- **Routes** - Define endpoints
+- **Middlewares** - Auth, validation, error handling
+- **Controllers** - Handle HTTP requests/responses
+- **Services** - Business logic
+- **Models** - Database operations
+
+## 📦 Tech Stack
+
+- **Express.js** - Web framework
+- **TypeScript** - Type safety
+- **Mongoose** - MongoDB ODM
+- **JWT** - Authentication
+- **Zod** - Validation
+- **bcryptjs** - Password hashing
+
+## 🐛 Troubleshooting
+
+**MongoDB connection failed**
+- Check `MONGODB_URI` in `.env`
+- Ensure MongoDB is running
+
+**JWT validation errors**
+- Verify token secrets in `.env`
+- Check token hasn't expired
+
+**Port already in use**
+- Change `PORT` in `.env` or kill the process using port 8000
+
+## 📝 License
+
+ISC License
